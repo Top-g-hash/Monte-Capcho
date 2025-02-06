@@ -1,0 +1,9 @@
+[package]
+name = "text-extractor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tempfile = "3.8"
+chrono = "0.4"
+dirs = "5.0"
