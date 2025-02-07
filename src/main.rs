@@ -6,7 +6,6 @@ use std::process::Command;
 use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::Result;
-use clipboard::{ClipboardContext, ClipboardProvider};
 
 fn main() -> iced::Result {
     ScreenshotOcr::run(Settings {
@@ -63,10 +62,14 @@ impl Sandbox for ScreenshotOcr {
                 }
             }
             Message::CopyToClipboard => {
-                if let Ok(mut ctx) = ClipboardContext::new() {
-                    if ctx.set_contents(self.ocr_text.clone()).is_ok() {
+                // Use wl-copy for Wayland clipboard
+                match Command::new("wl-copy")
+                    .arg(&self.ocr_text)
+                    .status() {
+                    Ok(status) if status.success() => {
                         self.status_message = "Copied to clipboard".to_string();
-                    } else {
+                    }
+                    _ => {
                         self.error_message = "Failed to copy to clipboard".to_string();
                     }
                 }
