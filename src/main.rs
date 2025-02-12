@@ -1,50 +1,72 @@
-use iced::widget::{button, column, container, scrollable, text, Text};
-use iced::{Alignment, Element, Length, Sandbox, Settings};
-use iced::window::Settings as WindowSettings;
+use iced::highlighter;
+use iced::keyboard;
+use iced::widget::{
+    self, button, column, container, horizontal_space, pick_list, row, text,
+    text_editor, toggler, tooltip,
+};
+use iced::{Center, Element, Fill, Font, Task, Theme};
+use std::ffi;
+use std::io;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use image::{DynamicImage, ImageBuffer, Luma};
 use std::process::Command;
 use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::Result;
 
-fn main() -> iced::Result {
-    ScreenshotOcr::run(Settings {
-        window: WindowSettings {
-            size: (500, 400),
-            ..Default::default()
-        },
-        ..Default::default()
-    })
+pub fn main() -> iced::Result {
+    iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
+        .theme(Editor::theme)
+        .default_font(Font::MONOSPACE)
+        .run_with(Editor::new)
 }
 
-struct ScreenshotOcr {
-    ocr_text: String,
+struct Editor {
+    file: Option<PathBuf>,
+    content: text_editor::Content,
+    theme: highlighter::Theme,
+    word_wrap: bool,
+    is_loading: bool,
+    is_dirty: bool,
+    // ocr_text: String,
     status_message: String,
     error_message: String,
 }
 
 #[derive(Debug, Clone)]
 enum Message {
-    CaptureAndProcess,
-    CopyToClipboard,
+    ActionPerformed(text_editor::Action),
+    ThemeSelected(highlighter::Theme),
+    WordWrapToggled(bool),
+    NewFile,
+    OpenFile,
+    FileOpened(Result<(PathBuf, Arc<String>), Error>),
+    SaveFile,
+    FileSaved(Result<PathBuf, Error>),
+     CaptureAndProcess,
 }
 
-impl Sandbox for ScreenshotOcr {
-    type Message = Message;
-
-    fn new() -> Self {
-        Self {
-            ocr_text: String::new(),
+impl Editor {
+    fn new() -> (Self, Task<Message>) {
+        (
+            Self {
+               //  ocr_text: String::new(),
             status_message: "Click 'Capture' to start".to_string(),
             error_message: String::new(),
-        }
+                file: None,
+                content: text_editor::Content::new(),
+                theme: highlighter::Theme::SolarizedDark,
+                word_wrap: true,
+                is_loading: false,
+                is_dirty: false,
+            },
+
+        Task::none(),
+        )
     }
 
-    fn title(&self) -> String {
-        String::from("Screenshot OCR")
-    }
-
-    fn update(&mut self, message: Message) {
+    fn update(&mut self, message: Message) -> Task<Message> {
         match message {
             Message::CaptureAndProcess => {
                 self.status_message = "Selecting region...".to_string();
@@ -52,66 +74,275 @@ impl Sandbox for ScreenshotOcr {
 
                 match capture_and_process() {
                     Ok(text) => {
-                        self.ocr_text = text;
-                        self.status_message = "Text extracted successfully".to_string();
-                    }
+                      self.content = text_editor::Content::with_text(&text);
+                    self.status_message = "Text extracted successfully".to_string();                    }
                     Err(e) => {
                         self.error_message = format!("Error: {}", e);
                         self.status_message = "Failed to process".to_string();
                     }
                 }
+                Task::none() // Return an empty task
             }
-            Message::CopyToClipboard => {
-                // Use wl-copy for Wayland clipboard
-                match Command::new("wl-copy")
-                    .arg(&self.ocr_text)
-                    .status() {
-                    Ok(status) if status.success() => {
-                        self.status_message = "Copied to clipboard".to_string();
-                    }
-                    _ => {
-                        self.error_message = "Failed to copy to clipboard".to_string();
-                    }
+
+            Message::ActionPerformed(action) => {
+                self.is_dirty = self.is_dirty || action.is_edit();
+
+                self.content.perform(action);
+
+                Task::none()
+            }
+            Message::ThemeSelected(theme) => {
+                self.theme = theme;
+
+                Task::none()
+            }
+            Message::WordWrapToggled(word_wrap) => {
+                self.word_wrap = word_wrap;
+
+                Task::none()
+            }
+            Message::NewFile => {
+                if !self.is_loading {
+                    self.file = None;
+                    self.content = text_editor::Content::new();
                 }
+
+                Task::none()
+            }
+            Message::OpenFile => {
+                if self.is_loading {
+                    Task::none()
+                } else {
+                    self.is_loading = true;
+
+                    Task::perform(open_file(), Message::FileOpened)
+                }
+            }
+            Message::FileOpened(result) => {
+                self.is_loading = false;
+                self.is_dirty = false;
+
+                if let Ok((path, contents)) = result {
+                    self.file = Some(path);
+                    self.content = text_editor::Content::with_text(&contents);
+                }
+
+                Task::none()
+            }
+            Message::SaveFile => {
+                if self.is_loading {
+                    Task::none()
+                } else {
+                    self.is_loading = true;
+
+                    Task::perform(
+                        save_file(self.file.clone(), self.content.text()),
+                        Message::FileSaved,
+                    )
+                }
+            }
+            Message::FileSaved(result) => {
+                self.is_loading = false;
+
+                if let Ok(path) = result {
+                    self.file = Some(path);
+                    self.is_dirty = false;
+                }
+
+                Task::none()
             }
         }
     }
 
     fn view(&self) -> Element<Message> {
-        let capture_button = button("Capture")
+         let capture_button = button("Capture")
             .on_press(Message::CaptureAndProcess);
 
-        let copy_button = button("Copy to Clipboard")
-            .on_press(Message::CopyToClipboard);
 
-        let status = if !self.error_message.is_empty() {
-            text(&self.error_message).style(iced::Color::from_rgb(0.8, 0.0, 0.0))
-        } else {
-            text(&self.status_message)
-        };
-
-        let content = column![
-            status,
-            capture_button,
-            scrollable(
-                text(&self.ocr_text)
-                    .width(Length::Fill)
-            ).height(Length::Fill),
-            copy_button,
+        let controls = row![
+            action(new_icon(), "New file", Some(Message::NewFile)),
+            action(
+                open_icon(),
+                "Open file",
+                (!self.is_loading).then_some(Message::OpenFile)
+            ),
+            action(
+                save_icon(),
+                "Save file",
+                self.is_dirty.then_some(Message::SaveFile)
+            ),
+            horizontal_space(),
+            toggler(self.word_wrap)
+                .label("Word Wrap")
+                .on_toggle(Message::WordWrapToggled),
+            pick_list(
+                highlighter::Theme::ALL,
+                Some(self.theme),
+                Message::ThemeSelected
+            )
+            .text_size(14)
+            .padding([5, 10])
         ]
-        .padding(20)
-        .spacing(20)
-        .align_items(Alignment::Center);
+        .spacing(10)
+        .align_y(Center);
 
-        container(content)
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .center_x()
-            .center_y()
-            .into()
+        let status = row![
+            text(if let Some(path) = &self.file {
+                let path = path.display().to_string();
+
+                if path.len() > 60 {
+                    format!("...{}", &path[path.len() - 40..])
+                } else {
+                    path
+                }
+            } else {
+                String::from("New file")
+            }),
+            horizontal_space(),
+            text({
+                let (line, column) = self.content.cursor_position();
+
+                format!("{}:{}", line + 1, column + 1)
+            })
+        ]
+        .spacing(10);
+
+        column![
+            capture_button,
+            controls,
+            text_editor(&self.content)
+                .height(Fill)
+                .on_action(Message::ActionPerformed)
+                .wrapping(if self.word_wrap {
+                    text::Wrapping::Word
+                } else {
+                    text::Wrapping::None
+                })
+                .highlight(
+                    self.file
+                        .as_deref()
+                        .and_then(Path::extension)
+                        .and_then(ffi::OsStr::to_str)
+                        .unwrap_or("rs"),
+                    self.theme,
+                )
+                .key_binding(|key_press| {
+                    match key_press.key.as_ref() {
+                        keyboard::Key::Character("s")
+                            if key_press.modifiers.command() =>
+                        {
+                            Some(text_editor::Binding::Custom(
+                                Message::SaveFile,
+                            ))
+                        }
+                        _ => text_editor::Binding::from_key_press(key_press),
+                    }
+                }),
+            status,
+        ]
+        .spacing(10)
+        .padding(10)
+        .into()
+    }
+
+    fn theme(&self) -> Theme {
+        if self.theme.is_dark() {
+            Theme::Dark
+        } else {
+            Theme::Light
+        }
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum Error {
+    DialogClosed,
+    IoError(io::ErrorKind),
+}
+
+async fn open_file() -> Result<(PathBuf, Arc<String>), Error> {
+    let picked_file = rfd::AsyncFileDialog::new()
+        .set_title("Open a text file...")
+        .pick_file()
+        .await
+        .ok_or(Error::DialogClosed)?;
+
+    load_file(picked_file).await
+}
+
+async fn load_file(
+    path: impl Into<PathBuf>,
+) -> Result<(PathBuf, Arc<String>), Error> {
+    let path = path.into();
+
+    let contents = tokio::fs::read_to_string(&path)
+        .await
+        .map(Arc::new)
+        .map_err(|error| Error::IoError(error.kind()))?;
+
+    Ok((path, contents))
+}
+
+async fn save_file(
+    path: Option<PathBuf>,
+    contents: String,
+) -> Result<PathBuf, Error> {
+    let path = if let Some(path) = path {
+        path
+    } else {
+        rfd::AsyncFileDialog::new()
+            .save_file()
+            .await
+            .as_ref()
+            .map(rfd::FileHandle::path)
+            .map(Path::to_owned)
+            .ok_or(Error::DialogClosed)?
+    };
+
+    tokio::fs::write(&path, contents)
+        .await
+        .map_err(|error| Error::IoError(error.kind()))?;
+
+    Ok(path)
+}
+
+fn action<'a, Message: Clone + 'a>(
+    content: impl Into<Element<'a, Message>>,
+    label: &'a str,
+    on_press: Option<Message>,
+) -> Element<'a, Message> {
+    let action = button(container(content).center_x(30));
+
+    if let Some(on_press) = on_press {
+        tooltip(
+            action.on_press(on_press),
+            label,
+            tooltip::Position::FollowCursor,
+        )
+        .style(container::rounded_box)
+        .into()
+    } else {
+        action.style(button::secondary).into()
+    }
+}
+
+fn new_icon<'a, Message>() -> Element<'a, Message> {
+    icon('\u{0e800}')
+}
+
+fn save_icon<'a, Message>() -> Element<'a, Message> {
+    icon('\u{0e801}')
+}
+
+fn open_icon<'a, Message>() -> Element<'a, Message> {
+    icon('\u{0f115}')
+}
+
+fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
+    const ICON_FONT: Font = Font::with_name("editor-icons");
+
+    text(codepoint).font(ICON_FONT).into()
+}
 fn capture_and_process() -> Result<String> {
     // Create temporary file with .png extension
     let tmp_file = NamedTempFile::new()?;
