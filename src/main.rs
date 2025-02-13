@@ -156,12 +156,13 @@ impl Editor {
     }
 
     fn view(&self) -> Element<Message> {
-         let capture_button = button("Capture")
-            .on_press(Message::CaptureAndProcess);
+        // let capture_button = button("Capture")
+          //  .on_press(Message::CaptureAndProcess);
 
 
         let controls = row![
             action(new_icon(), "New file", Some(Message::NewFile)),
+            action(extract_icon(), "Capture Text", Some(Message::CaptureAndProcess)),
             action(
                 open_icon(),
                 "Open file",
@@ -209,7 +210,6 @@ impl Editor {
         .spacing(10);
 
         column![
-            capture_button,
             controls,
             text_editor(&self.content)
                 .height(Fill)
@@ -338,7 +338,9 @@ fn save_icon<'a, Message>() -> Element<'a, Message> {
 fn open_icon<'a, Message>() -> Element<'a, Message> {
     icon('\u{F115}')
 }
-
+fn extract_icon <'a, Message>() -> Element<'a, Message> {
+    icon('\u{E800}')
+}
 fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
     const ICON_FONT: Font = Font::with_name("ocr-fonts");
 
