@@ -18,6 +18,7 @@ use anyhow::Result;
 pub fn main() -> iced::Result {
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
         .theme(Editor::theme)
+        .font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
         .run_with(Editor::new)
 }
@@ -327,19 +328,19 @@ fn action<'a, Message: Clone + 'a>(
 }
 
 fn new_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0e800}')
+    icon('\u{F0F6}')
 }
 
 fn save_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0e801}')
+    icon('\u{E801}')
 }
 
 fn open_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{0f115}')
+    icon('\u{F115}')
 }
 
 fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
-    const ICON_FONT: Font = Font::with_name("editor-icons");
+    const ICON_FONT: Font = Font::with_name("ocr-fonts");
 
     text(codepoint).font(ICON_FONT).into()
 }
