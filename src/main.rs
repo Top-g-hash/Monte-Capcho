@@ -14,6 +14,7 @@ use std::process::Command;
 use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::Result;
+use arboard::Clipboard;
 
 pub fn main() -> iced::Result {
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
@@ -46,6 +47,7 @@ enum Message {
     SaveFile,
     FileSaved(Result<PathBuf, Error>),
      CaptureAndProcess,
+   CopyToClipboard
 }
 
 impl Editor {
@@ -69,6 +71,18 @@ impl Editor {
 
     fn update(&mut self, message: Message) -> Task<Message> {
         match message {
+            Message::CopyToClipboard => {
+                match copy_editor_content(&self.content) {
+                    Ok(_) => {
+                        self.status_message = "Copied to clipboard".to_string();
+                    }
+                    Err(e) => {
+                        self.error_message = format!("Failed to copy: {}", e);
+                    }
+                }
+                Task::none()
+            }
+
             Message::CaptureAndProcess => {
                 self.status_message = "Selecting region...".to_string();
                 self.error_message.clear();
@@ -159,10 +173,15 @@ impl Editor {
         // let capture_button = button("Capture")
           //  .on_press(Message::CaptureAndProcess);
 
-
+            let warning = if !self.error_message.is_empty() {
+                text(&self.error_message)
+            } else {
+                text(&self.status_message)
+            };
         let controls = row![
             action(new_icon(), "New file", Some(Message::NewFile)),
             action(extract_icon(), "Capture Text", Some(Message::CaptureAndProcess)),
+            action(copy_icon(), "Copy text", Some(Message::CopyToClipboard)),
             action(
                 open_icon(),
                 "Open file",
@@ -239,6 +258,7 @@ impl Editor {
                         _ => text_editor::Binding::from_key_press(key_press),
                     }
                 }),
+            warning,
             status,
         ]
         .spacing(10)
@@ -341,6 +361,10 @@ fn open_icon<'a, Message>() -> Element<'a, Message> {
 fn extract_icon <'a, Message>() -> Element<'a, Message> {
     icon('\u{E800}')
 }
+fn copy_icon <'a, Message>() -> Element<'a, Message> {
+    icon('\u{F0C5}')
+}
+
 fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
     const ICON_FONT: Font = Font::with_name("ocr-fonts");
 
@@ -403,4 +427,10 @@ fn capture_and_process() -> Result<String> {
     let text = tess.get_text()?;
 
     Ok(text)
+}
+fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn std::error::Error>> {
+    let text = content.text();
+    let mut clipboard = Clipboard::new()?;
+    clipboard.set_text(text.to_string())?;
+    Ok(())
 }
