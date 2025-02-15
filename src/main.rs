@@ -159,7 +159,20 @@ impl Editor {
                         .and_then(ffi::OsStr::to_str)
                         .unwrap_or("rs"),
                     self.theme,
-                ),
+                )
+                    .key_binding(|key_press| {
+                    match key_press.key.as_ref() {
+                        keyboard::Key::Character("c")
+                            if key_press.modifiers.control() =>
+                        {
+                            Some(text_editor::Binding::Custom(
+                                Message::CopyToClipboard,
+                            ))
+                        }
+                        _ => text_editor::Binding::from_key_press(key_press),
+                    }
+                }),
+
             status,
         ]
         .spacing(10)
