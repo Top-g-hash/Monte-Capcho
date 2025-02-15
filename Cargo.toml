@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 iced ={version= "0.13.1",features =["highlighter", "tokio", "debug"]}
+    iced_native="0.10.3"
 tokio ={version ="1.43.0",features=["fs"]}
 rfd = "0.13"
 image = "0.24"
@@ -12,3 +13,4 @@ tempfile = "3.8"
 tesseract = "0.15"
 anyhow = "1.0"
 arboard ={ version = "3.4.1", features = ["wayland-data-control"] }
+iced_futures = "0.13.2"

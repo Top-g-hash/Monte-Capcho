@@ -13,9 +13,13 @@ use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::Result;
 use arboard::Clipboard;
+use iced::Subscription;
+use iced::event::{self, Event};
+use iced::keyboard;
 
 pub fn main() -> iced::Result {
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
+        .subscription(Editor::subscription)
         .theme(Editor::theme)
         .font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
@@ -28,7 +32,6 @@ struct Editor {
     theme: highlighter::Theme,
     is_loading: bool,
     is_dirty: bool,
-    // ocr_text: String,
     status_message: String,
     error_message: String,
 }
@@ -39,14 +42,13 @@ enum Message {
     ThemeSelected(highlighter::Theme),
     NewFile,
      CaptureAndProcess,
-   CopyToClipboard
+   CopyToClipboard,
 }
 
 impl Editor {
     fn new() -> (Self, Task<Message>) {
         (
             Self {
-               //  ocr_text: String::new(),
             status_message: "Click 'Capture' to start".to_string(),
             error_message: String::new(),
                 file: None,
@@ -119,18 +121,15 @@ impl Editor {
     }
 
     fn view(&self) -> Element<Message> {
-        // let capture_button = button("Capture")
-          //  .on_press(Message::CaptureAndProcess);
-
             let status = if !self.error_message.is_empty() {
                 text(&self.error_message)
             } else {
                 text(&self.status_message)
             };
         let controls = row![
-            action(new_icon(), "New file", Some(Message::NewFile)),
-            action(extract_icon(), "Capture Text", Some(Message::CaptureAndProcess)),
-            action(copy_icon(), "Copy text", Some(Message::CopyToClipboard)),
+            action(new_icon(), "Clear Text ", Some(Message::NewFile)),
+            action(extract_icon(), "Capture Text (Ctrl + S)", Some(Message::CaptureAndProcess)),
+            action(copy_icon(), "Copy Text (Ctrl+C)", Some(Message::CopyToClipboard)),
                         horizontal_space(),
                         pick_list(
                 highlighter::Theme::ALL,
@@ -174,6 +173,21 @@ impl Editor {
         } else {
             Theme::Light
         }
+    }
+ fn subscription(&self) -> Subscription<Message> {
+
+        keyboard::on_key_press(|key, modifiers| {
+            if keyboard::Key::Character("c") == key.as_ref() {
+    if modifiers.control() {
+        Some(Message::CopyToClipboard)
+            } else {
+                None
+
+}
+            } else {
+                None
+            }
+        })
     }
 }
 
