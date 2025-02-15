@@ -175,21 +175,26 @@ impl Editor {
         }
     }
  fn subscription(&self) -> Subscription<Message> {
+    keyboard::on_key_press(|key, modifiers| {
+        println!("Key: {:?}, Modifiers: {:?}", key, modifiers); // Debug output
 
-        keyboard::on_key_press(|key, modifiers| {
-            if keyboard::Key::Character("c") == key.as_ref() {
-    if modifiers.control() {
-        Some(Message::CopyToClipboard)
-            } else {
-                None
+        if modifiers.control() {
+            match key {
+                keyboard::Key::Character(ch) => {
+                    match ch.to_lowercase().as_str() {
+                        "c" => Some(Message::CopyToClipboard),
+                        "s" => Some(Message::CaptureAndProcess),
+                        _ => None,
+                    }
+                }
 
-}
-            } else {
-                None
+                _ => None,
             }
-        })
-    }
-}
+        } else {
+            None
+        }
+    })
+}}
 
 #[derive(Debug, Clone)]
 pub enum Error {
