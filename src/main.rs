@@ -13,12 +13,14 @@ use iced::Subscription;
 use iced::keyboard;
 
 mod ocr;
-
+mod icon;
 pub fn main() -> iced::Result {
+        iced_fontello::build("fonts/ocr-icons.toml").expect("Build ocr-icons font");
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
         .subscription(Editor::subscription)
         .theme(Editor::theme)
-        .font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
+        .font(icon::FONT)
+        //.font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
         .run_with(Editor::new)
 }
@@ -124,9 +126,9 @@ impl Editor {
                 text(&self.status_message)
             };
         let controls = row![
-            action(new_icon(), "Clear Text ", Some(Message::NewFile)),
-            action(extract_icon(), "Capture Text (Ctrl + S)", Some(Message::CaptureAndProcess)),
-            action(copy_icon(), "Copy Text (Ctrl+C)", Some(Message::CopyToClipboard)),
+            action(icon::clear(), "Clear Text ", Some(Message::NewFile)),
+            action(icon::capture(), "Capture Text (Ctrl + S)", Some(Message::CaptureAndProcess)),
+            action(icon::copy(), "Copy Text (Ctrl+C)", Some(Message::CopyToClipboard)),
                         horizontal_space(),
                         pick_list(
                 highlighter::Theme::ALL,

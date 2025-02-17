@@ -1,0 +1,7 @@
+# fonts/example-icons.toml
+module = "icon"
+
+[glyphs]
+capture  = "fontawesome-camera"
+copy = "fontawesome-docs"
+clear = "fontawesome-arrows-cw"
