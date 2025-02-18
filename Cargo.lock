@@ -878,6 +878,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "crap"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d285dc92647cb3d3923d8b4769de6259c0391d7fadb53eba5cdb95a8f7ae6d0a"
+
+[[package]]
 name = "crc"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4535,6 +4541,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "arboard",
+ "crap",
  "iced",
  "iced_fontello",
  "iced_futures 0.13.2",

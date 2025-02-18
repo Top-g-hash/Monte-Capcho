@@ -216,28 +216,7 @@ pub enum Error {
 
 
 
-async fn save_file(
-    path: Option<PathBuf>,
-    contents: String,
-) -> Result<PathBuf, Error> {
-    let path = if let Some(path) = path {
-        path
-    } else {
-        rfd::AsyncFileDialog::new()
-            .save_file()
-            .await
-            .as_ref()
-            .map(rfd::FileHandle::path)
-            .map(Path::to_owned)
-            .ok_or(Error::DialogClosed)?
-    };
 
-    tokio::fs::write(&path, contents)
-        .await
-        .map_err(|error| Error::IoError(error.kind()))?;
-
-    Ok(path)
-}
 
 fn action<'a, Message: Clone + 'a>(
     content: impl Into<Element<'a, Message>>,
@@ -259,25 +238,6 @@ fn action<'a, Message: Clone + 'a>(
     }
 }
 
-fn new_icon<'a, Message>() -> Element<'a, Message> {
-    icon('\u{F0F6}')
-}
-
-
-
-
-fn extract_icon <'a, Message>() -> Element<'a, Message> {
-    icon('\u{E800}')
-}
-fn copy_icon <'a, Message>() -> Element<'a, Message> {
-    icon('\u{F0C5}')
-}
-
-fn icon<'a, Message>(codepoint: char) -> Element<'a, Message> {
-    const ICON_FONT: Font = Font::with_name("ocr-fonts");
-
-    text(codepoint).font(ICON_FONT).into()
-}
 fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn std::error::Error>> {
     let text = content.text();
     let mut clipboard = Clipboard::new()?;
