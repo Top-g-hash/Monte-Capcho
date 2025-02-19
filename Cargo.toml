@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 iced ={version= "0.13.1",features =["highlighter", "tokio", "debug"]}
-    iced_native="0.10.3"
+iced_native="0.10.3"
 tokio ={version ="1.43.0",features=["fs"]}
 rfd = "0.13"
 image = "0.24"

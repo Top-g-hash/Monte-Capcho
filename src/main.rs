@@ -15,6 +15,7 @@ use clap::Parser;
 mod cli;
 mod ocr;
 mod icon;
+
 pub fn main() -> iced::Result {
      let cli = cli::Cli::parse();
 
