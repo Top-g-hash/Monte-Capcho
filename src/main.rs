@@ -7,15 +7,16 @@ use iced::{Center, Element, Fill, Font, Task, Theme};
 use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
-use clap::Parser;
 use arboard::Clipboard;
 use iced::Subscription;
 use iced::keyboard;
+use clap::Parser;
 
+mod cli;
 mod ocr;
 mod icon;
 pub fn main() -> iced::Result {
-     let cli = Cli::parse();
+     let cli = cli::Cli::parse();
 
     if cli.capture {
         println!("Performing OCR capture...");
@@ -23,7 +24,7 @@ pub fn main() -> iced::Result {
             Ok(text) => {
                 println!("Extracted text:\n{}", text);
                 if cli.copy {
-                    if let Err(e) = copy_text_to_clipboard(&text) {
+                    if let Err(e) =cli::copy_text_to_clipboard(&text) {
                         eprintln!("Failed to copy text to clipboard: {}", e);
                     }
                 }
@@ -266,20 +267,3 @@ fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn std
     Ok(())
 }
 
-#[derive(Parser)]
-#[command(name = "MonteCapcho - Text Extractor")]
-#[command(about = "Extracts text using OCR from a selected region")]
-struct Cli {
-    /// Trigger screen capture and OCR processing
-    #[arg(short = 'c', long)]
-    capture: bool,
-
-    /// Copy the extracted text to clipboard
-    #[arg(short = 'p', long)]
-    copy: bool,
-}
-fn copy_text_to_clipboard(text: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let mut clipboard = Clipboard::new()?;
-    clipboard.set_text(text.to_string())?;
-    Ok(())
-}
