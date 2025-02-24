@@ -19,18 +19,17 @@ mod icon;
 pub fn main() -> iced::Result {
     let cli = cli::Cli::parse();
     let mut initial_text: Option<String> = None;
-
+        let mut trigger_copy = false;
     if cli.capture {
         println!("Performing OCR capture...");
         match ocr::capture_and_process() {
             Ok(text) => {
                 println!("Extracted text:\n{}", text);
                 initial_text = Some(text.clone());
-                if cli.copy {
-                    // Use your persistent clipboard logic here.
-                    if let Err(e) = cli::copy_text_to_clipboard(&text) {
-                        eprintln!("Failed to copy text to clipboard: {}", e);
-                    }
+               if cli.copy {
+                    // Instead of calling copy_text_to_clipboard here,
+                    // we let the GUI trigger Message::CopyToClipboard.
+                    trigger_copy = true;
                 }
             }
             Err(e) => {
@@ -46,7 +45,7 @@ pub fn main() -> iced::Result {
         .font(icon::FONT)
         //.font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
-        .run_with(|| Editor::new_with_text(initial_text))
+        .run_with(move|| Editor::new_with_text(initial_text, trigger_copy))
 }
 
 struct Editor {
@@ -70,11 +69,17 @@ enum Message {
 
 impl Editor {
     // New initializer that accepts an optional captured text.
-    fn new_with_text(initial_text: Option<String>) -> (Self, Task<Message>) {
+    fn new_with_text(initial_text: Option<String>, trigger_copy: bool) -> (Self, Task<Message>) {
         let content = if let Some(text) = initial_text {
             text_editor::Content::with_text(&text)
         } else {
             text_editor::Content::new()
+        };
+        let task = if trigger_copy {
+            // The async block here doesn't need to do any work; it's just used to schedule the message.
+            Task::perform(async { () }, |_| Message::CopyToClipboard)
+        } else {
+            Task::none()
         };
 
         (
@@ -87,7 +92,7 @@ impl Editor {
                 is_loading: false,
                 is_dirty: false,
             },
-            Task::none(),
+             task,
         )
     }
     fn new() -> (Self, Task<Message>) {
