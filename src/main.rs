@@ -17,15 +17,18 @@ mod ocr;
 mod icon;
 
 pub fn main() -> iced::Result {
-     let cli = cli::Cli::parse();
+    let cli = cli::Cli::parse();
+    let mut initial_text: Option<String> = None;
 
     if cli.capture {
         println!("Performing OCR capture...");
         match ocr::capture_and_process() {
             Ok(text) => {
                 println!("Extracted text:\n{}", text);
+                initial_text = Some(text.clone());
                 if cli.copy {
-                    if let Err(e) =cli::copy_text_to_clipboard(&text) {
+                    // Use your persistent clipboard logic here.
+                    if let Err(e) = cli::copy_text_to_clipboard(&text) {
                         eprintln!("Failed to copy text to clipboard: {}", e);
                     }
                 }
@@ -34,9 +37,7 @@ pub fn main() -> iced::Result {
                 eprintln!("Error during OCR capture: {}", e);
             }
         }
-        return Ok(());
     }
-
 
     iced_fontello::build("fonts/ocr-icons.toml").expect("Build ocr-icons font");
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
@@ -45,7 +46,7 @@ pub fn main() -> iced::Result {
         .font(icon::FONT)
         //.font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
-        .run_with(Editor::new)
+        .run_with(|| Editor::new_with_text(initial_text))
 }
 
 struct Editor {
@@ -68,6 +69,27 @@ enum Message {
 }
 
 impl Editor {
+    // New initializer that accepts an optional captured text.
+    fn new_with_text(initial_text: Option<String>) -> (Self, Task<Message>) {
+        let content = if let Some(text) = initial_text {
+            text_editor::Content::with_text(&text)
+        } else {
+            text_editor::Content::new()
+        };
+
+        (
+            Self {
+                status_message: "Click 'Capture' to start".to_string(),
+                error_message: String::new(),
+                file: None,
+                content,
+                theme: highlighter::Theme::SolarizedDark,
+                is_loading: false,
+                is_dirty: false,
+            },
+            Task::none(),
+        )
+    }
     fn new() -> (Self, Task<Message>) {
         (
             Self {
@@ -267,4 +289,3 @@ fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn std
     clipboard.set_text(text.to_string())?;
     Ok(())
 }
-
