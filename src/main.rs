@@ -11,7 +11,8 @@ use arboard::Clipboard;
 use iced::Subscription;
 use iced::keyboard;
 use clap::Parser;
-
+use iced::{window, Settings, Size};
+use iced::window::Position;
 mod cli;
 mod ocr;
 mod icon;
@@ -40,6 +41,8 @@ pub fn main() -> iced::Result {
 
     iced_fontello::build("fonts/ocr-icons.toml").expect("Build ocr-icons font");
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
+            .centered()
+        .window(window::Settings{position:Position::Centered,..Default::default()})
         .subscription(Editor::subscription)
         .theme(Editor::theme)
         .font(icon::FONT)
