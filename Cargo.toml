@@ -12,6 +12,7 @@ image = "0.24"
 tempfile = "3.8"
 tesseract = "0.15"
 anyhow = "1.0"
+daemonize="0.5.0"
 arboard ={ version = "3.4.1", features = ["wayland-data-control"] }
 iced_futures = "0.13.2"
 iced_fontello="0.13"

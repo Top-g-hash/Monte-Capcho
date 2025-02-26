@@ -13,6 +13,8 @@ use iced::keyboard;
 use clap::Parser;
 use iced::window;
 use iced::window::Position;
+use std::env;
+use std::process:: Stdio;
 
 mod cli;
 mod ocr;
@@ -39,7 +41,11 @@ pub fn main() -> iced::Result {
             }
         }
     }
-
+ if let Err(e) = start_copyq() {
+        eprintln!("Warning: failed to start CopyQ: {}", e);
+    } else {
+        println!("CopyQ started successfully.");
+    }
     iced_fontello::build("fonts/ocr-icons.toml").expect("Build ocr-icons font");
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
             .centered()
@@ -47,7 +53,6 @@ pub fn main() -> iced::Result {
         .subscription(Editor::subscription)
         .theme(Editor::theme)
         .font(icon::FONT)
-        //.font(include_bytes!("../fonts/ocr-fonts.ttf").as_slice())
         .default_font(Font::MONOSPACE)
         .run_with(move|| Editor::new_with_text(initial_text, trigger_copy))
 }
@@ -263,7 +268,7 @@ impl Editor {
 }}
 
 #[derive(Debug, Clone)]
-pub enum Error {
+pub enum OtherError {
     DialogClosed,
     IoError(io::ErrorKind),
 }
@@ -292,9 +297,39 @@ fn action<'a, Message: Clone + 'a>(
     }
 }
 
-fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn std::error::Error>> {
+use std::error::Error;
+use std::process::Command;
+
+fn copy_text_using_copyq(text: &str) -> Result<(), Box<dyn Error>> {
+    // Call the copyq command to store the text persistently.
+    Command::new("copyq")
+        .args(&["copy", text])
+        .spawn()?
+        .wait()?;
+    Ok(())
+}
+
+// Example usage:
+fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn Error>> {
     let text = content.text();
-    let mut clipboard = Clipboard::new()?;
-    clipboard.set_text(text.to_string())?;
+
+    // Option 1: Rely solely on CopyQ:
+    copy_text_using_copyq(&text)?;
+
+    // Option 2: Use both the native API and CopyQ:
+    // Clipboard::new()?.set_text(text.to_string())?;
+    // copy_text_using_copyq(text)?;
+
+    Ok(())
+}
+fn start_copyq() -> Result<(), Box<dyn Error>> {
+    Command::new("sh")
+        .arg("-c")
+        .arg("pgrep copyq || copyq --start-server && copyq hide")
+        .envs(env::vars())
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()?;
     Ok(())
 }
