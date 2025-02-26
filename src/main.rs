@@ -11,8 +11,9 @@ use arboard::Clipboard;
 use iced::Subscription;
 use iced::keyboard;
 use clap::Parser;
-use iced::{window, Settings, Size};
+use iced::window;
 use iced::window::Position;
+
 mod cli;
 mod ocr;
 mod icon;
