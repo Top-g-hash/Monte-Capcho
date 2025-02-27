@@ -15,6 +15,8 @@ use iced::window;
 use iced::window::Position;
 use std::env;
 use std::process:: Stdio;
+use std::error::Error;
+use std::process::Command;
 
 mod cli;
 mod ocr;
@@ -188,14 +190,9 @@ impl Editor {
             action(icon::clear(), "Clear Text ", Some(Message::NewFile)),
             action(icon::capture(), "Capture Text (Ctrl + S)", Some(Message::CaptureAndProcess)),
             action(icon::copy(), "Copy Text (Ctrl+C)", Some(Message::CopyToClipboard)),
-                        horizontal_space(),
-                        pick_list(
-                highlighter::Theme::ALL,
-                Some(self.theme),
-                Message::ThemeSelected
-            )
-            .text_size(14)
-            .padding([5, 10])
+                        horizontal_space()
+
+
         ]
         .spacing(10)
         .align_y(Center);
@@ -297,8 +294,7 @@ fn action<'a, Message: Clone + 'a>(
     }
 }
 
-use std::error::Error;
-use std::process::Command;
+
 
 fn copy_text_using_copyq(text: &str) -> Result<(), Box<dyn Error>> {
     // Call the copyq command to store the text persistently.
