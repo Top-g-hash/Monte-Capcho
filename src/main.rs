@@ -190,7 +190,8 @@ impl Editor {
             action(icon::clear(), "Clear Text ", Some(Message::NewFile)),
             action(icon::capture(), "Capture Text (Ctrl + S)", Some(Message::CaptureAndProcess)),
             action(icon::copy(), "Copy Text (Ctrl+C)", Some(Message::CopyToClipboard)),
-                        horizontal_space()
+                        horizontal_space(),
+            status,
 
 
         ]
@@ -228,7 +229,6 @@ impl Editor {
                     }
                 }),
 
-            status,
         ]
         .spacing(10)
         .padding(10)
