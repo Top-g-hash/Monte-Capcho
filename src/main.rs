@@ -71,7 +71,6 @@ struct Editor {
 #[derive(Debug, Clone)]
 enum Message {
     ActionPerformed(text_editor::Action),
-    ThemeSelected(highlighter::Theme),
     NewFile,
      CaptureAndProcess,
    CopyToClipboard,
@@ -103,21 +102,6 @@ impl Editor {
                 is_dirty: false,
             },
              task,
-        )
-    }
-    fn new() -> (Self, Task<Message>) {
-        (
-            Self {
-            status_message: "Click 'Capture' to start".to_string(),
-            error_message: String::new(),
-                file: None,
-                content: text_editor::Content::new(),
-                theme: highlighter::Theme::SolarizedDark,
-                is_loading: false,
-                is_dirty: false,
-            },
-
-        Task::none(),
         )
     }
 
@@ -156,11 +140,6 @@ impl Editor {
                 self.is_dirty = self.is_dirty || action.is_edit();
 
                 self.content.perform(action);
-
-                Task::none()
-            }
-            Message::ThemeSelected(theme) => {
-                self.theme = theme;
 
                 Task::none()
             }
