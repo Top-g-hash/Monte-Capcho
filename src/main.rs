@@ -1,13 +1,12 @@
 use iced::highlighter;
 use iced::widget::{
-    button, column, container, horizontal_space, pick_list, row, text,
+    button, column, container, horizontal_space,  row, text,
     text_editor , tooltip,
 };
 use iced::{Center, Element, Fill, Font, Task, Theme};
 use std::ffi;
 use std::io;
 use std::path::{Path, PathBuf};
-use arboard::Clipboard;
 use iced::Subscription;
 use iced::keyboard;
 use clap::Parser;
