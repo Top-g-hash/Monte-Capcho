@@ -3,6 +3,7 @@ use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::{Result, Context};
 use image::{DynamicImage, ImageBuffer, Luma};
+use imageproc::contrast::adaptive_threshold;
 
 fn detect_display_server() -> &'static str {
     // Check XDG_SESSION_TYPE first (most reliable indicator)
@@ -38,8 +39,7 @@ pub fn capture_and_process() -> Result<String> {
 
         // Capture region with slurp
         let slurp_output = {
-            let output = Command::new("slurp")
-                .output()?;
+            let output = Command::new("slurp").output()?;
             if !output.status.success() {
                 anyhow::bail!("Region selection cancelled");
             }
@@ -89,18 +89,16 @@ pub fn capture_and_process() -> Result<String> {
 
     // Process image (same for both X11 and Wayland)
     let img = image::open(&screenshot_path)?;
+    // Convert image to grayscale
     let gray = img.grayscale();
+    // Increase contrast
     let contrasted = gray.adjust_contrast(2.0);
 
-    // Apply threshold
-    let binary = contrasted.to_luma8();
-    let binary = ImageBuffer::from_fn(binary.width(), binary.height(), |x, y| {
-        if binary.get_pixel(x, y)[0] > 128 {
-            Luma([255u8])
-        } else {
-            Luma([0u8])
-        }
-    });
+    // Convert to an 8-bit grayscale image
+    let luma = contrasted.to_luma8();
+    // Apply adaptive thresholding.
+    // The parameters (block size and constant) may need tuning depending on your images.
+let binary = adaptive_threshold(&luma, 15);
 
     // Save processed image
     let processed_img = DynamicImage::ImageLuma8(binary);
@@ -109,8 +107,7 @@ pub fn capture_and_process() -> Result<String> {
     processed_img.save(&processed_path)?;
 
     // Perform OCR
-    let image_path_str = processed_path.to_str()
-        .ok_or_else(|| anyhow::anyhow!("Invalid path"))?;
+    let image_path_str = processed_path.to_str().ok_or_else(|| anyhow::anyhow!("Invalid path"))?;
     let mut tess = Tesseract::new(None, Some("eng"))?;
     tess = tess.set_image(image_path_str)?;
     let text = tess.get_text()?;
