@@ -5,16 +5,21 @@ edition = "2021"
 
 [dependencies]
 iced ={version= "0.13.1",features =["highlighter", "tokio", "debug"]}
-iced_native="0.10.3"
 tokio ={version ="1.43.0",features=["fs"]}
 rfd = "0.13"
 image = "0.24"
 tempfile = "3.8"
 tesseract = "0.15"
 anyhow = "1.0"
-daemonize="0.5.0"
-iced_futures = "0.13.2"
 iced_fontello="0.13"
 clap = { version = "4", features = ["derive"] }
-env_logger = "0.11.6"
 imageproc = "0.23"  # or the latest version
+
+[profile.release]
+codegen-units = 1
+incremental = false
+lto = true
+opt-level = "z"  # Optimize for size
+strip = true     # Strip symbols
+
+

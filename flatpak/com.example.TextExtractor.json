@@ -1,0 +1,48 @@
+{
+    "app-id": "com.example.TextExtractor",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "24.08",
+    "sdk": "org.freedesktop.Sdk",
+    "sdk-extensions": [
+        "org.freedesktop.Sdk.Extension.rust-stable"
+    ],
+    "command": "text-extractor",
+    "build-options": {
+        "env": {
+            "PATH": "/usr/lib/sdk/rust-stable/bin:$PATH",
+            "CARGO_HOME": "/run/build/text-extractor/cargo"
+        }
+    },
+    "finish-args": [
+        "--share=ipc",
+        "--share=network",
+        "--socket=x11",
+        "--socket=wayland",
+        "--device=dri",
+        "--filesystem=home"
+    ],
+    "modules": [
+        {
+            "name": "text-extractor",
+            "buildsystem": "simple",
+            "build-commands": [
+                "cargo fetch --manifest-path Cargo.toml --verbose",
+                "cargo build --release --verbose",
+                "install -Dm755 ./target/release/text-extractor -t /app/bin/"
+            ],
+            "sources": [
+                 {
+            "type": "git",
+            "url": "ssh://git@github.com/Top-g-hash/Monte-Capcho.git",
+            "tag": "v0.1.0"
+        },
+                {
+                    "type": "dir",
+                    "path": "."
+                },
+                "cargo-sources.json"
+            ]
+        }
+    ]
+}
+

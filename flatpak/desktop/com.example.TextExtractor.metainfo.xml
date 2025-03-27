@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>com.example.TextExtractor</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <name>Text Extractor</name>
+    <summary>Extract text from images using OCR</summary>
+    <description>
+        <p>A simple tool to extract text from images with high accuracy using OCR technology.</p>
+    </description>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://example.com/screenshot1.png</image>
+        </screenshot>
+    </screenshots>
+</component>
