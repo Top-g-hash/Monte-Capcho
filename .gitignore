@@ -1,1 +1,25 @@
 /target
+# Rust build artifacts
+/target/
+**/*.rs.bk
+
+# Cargo.lock
+# (Uncomment if you don't want to track Cargo.lock, but for libraries it's usually tracked)
+# Cargo.lock
+
+# Flatpak Builder output
+/build-dir/
+/.flatpak-builder/
+
+# Generated Flatpak files (if you choose not to version control them)
+cargo-sources.json
+
+# Temporary files created by editors or OS
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+# Ignore Flatpak Builder temporary output
+flatpak/.flatpak-builder/
+
