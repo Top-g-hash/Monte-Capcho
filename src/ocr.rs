@@ -2,7 +2,7 @@ use std::process::Command;
 use tempfile::NamedTempFile;
 use tesseract::Tesseract;
 use anyhow::{Result, Context};
-use image::{DynamicImage, ImageBuffer, Luma};
+use image::DynamicImage ;
 use imageproc::contrast::adaptive_threshold;
 
 fn detect_display_server() -> &'static str {

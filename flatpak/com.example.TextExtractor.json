@@ -4,13 +4,20 @@
     "runtime-version": "24.08",
     "sdk": "org.freedesktop.Sdk",
     "sdk-extensions": [
-        "org.freedesktop.Sdk.Extension.rust-stable"
+        "org.freedesktop.Sdk.Extension.rust-stable",
+"org.freedesktop.Sdk.Extension.toolchain-i386",
+    "org.freedesktop.Sdk.Extension.toolchain-aarch64",
+    "org.freedesktop.Sdk.Extension.llvm18"
     ],
     "command": "text-extractor",
     "build-options": {
         "env": {
-            "PATH": "/usr/lib/sdk/rust-stable/bin:$PATH",
-            "CARGO_HOME": "/run/build/text-extractor/cargo"
+            "PATH": "/usr/lib/sdk/rust-stable/lib/rustlib/x86_64-unknown-linux-gnu/bin:/run/ccache/bin:/usr/lib/sdk/rust-stable/bin:/usr/bin:$PATH",
+            "CARGO_HOME": "/run/build/text-extractor/cargo",
+                     "LIBCLANG_PATH": "/usr/lib/sdk/llvm18/lib",
+             "C_INCLUDE_PATH": "/usr/include:/usr/lib/gcc/x86_64-unknown-linux-gnu/14.2.0/include:/usr/lib/sdk/toolchain-i386/lib/x86_64-linux-gnu/gcc/i686-unknown-linux-gnu/14.2.0/include",
+                "CPATH": "/usr/include:/usr/lib/sdk/rust-stable/include",
+        "SYSROOT": "/usr"
         }
     },
     "finish-args": [
@@ -23,6 +30,63 @@
     ],
     "modules": [
         {
+  "name": "giflib",
+  "buildsystem": "simple",
+  "build-commands": [
+    "make -j$(nproc)",
+    "make install PREFIX=/app"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://sourceforge.net/projects/giflib/files/giflib-5.2.1.tar.gz",
+      "sha256": "31da5562f44c5f15d63340a09a4fd62b48c45620cd302f77a6d9acf0077879bd"
+    }
+  ]
+},
+        {
+  "name": "leptonica",
+  "buildsystem": "autotools",
+  "build-options": {
+    "env": {
+      "PKG_CONFIG_PATH": "/app/lib/pkgconfig:$PKG_CONFIG_PATH"
+    }
+  },
+  "build-commands": [
+    "./autogen.sh",
+    "./configure --prefix=/app --with-pkgconfigdir=/app/lib/pkgconfig --disable-shared --enable-static --without-giflib",
+    "make -j$(nproc)",
+    "make install",
+    "ls -la /app/lib/pkgconfig"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://github.com/DanBloomberg/leptonica/archive/refs/tags/1.82.0.tar.gz",
+      "sha256": "40fa9ac1e815b91e0fa73f0737e60c9eec433a95fa123f95f2573dd3127dd669"
+    }
+  ]
+},
+ {
+  "name": "tesseract",
+  "buildsystem": "simple",
+  "build-commands": [
+    "mkdir build",
+    "cd build && cmake -DCMAKE_INSTALL_PREFIX=/app -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS=\"-lz -ljpeg -lpng -ltiff -lwebp -lopenjp2\" -DCMAKE_SHARED_LINKER_FLAGS=\"-lz -ljpeg -lpng -ltiff -lwebp -lopenjp2\" -DTESSERACT_EXTRA_LIBS=\"-lwebp -lopenjp2\" -DCMAKE_MODULE_LINKER_FLAGS=\"-lwebp -lopenjp2\" ..",
+    "cd build && make -j$(nproc)",
+    "cd build && make install",
+    "cd build && ls -la /app/lib/pkgconfig"
+  ],
+  "sources": [
+    {
+      "type": "archive",
+      "url": "https://github.com/tesseract-ocr/tesseract/archive/refs/tags/5.3.0.tar.gz",
+      "sha256": "7e70870f8341e5ea228af2836ce79a36eefa11b01b56177b4a8997f330c014b8"
+    }
+  ]
+},
+
+                 {
             "name": "text-extractor",
             "buildsystem": "simple",
             "build-commands": [
@@ -31,15 +95,11 @@
                 "install -Dm755 ./target/release/text-extractor -t /app/bin/"
             ],
             "sources": [
-                 {
-            "type": "git",
-            "url": "ssh://git@github.com/Top-g-hash/Monte-Capcho.git",
-            "tag": "v0.1.0"
-        },
                 {
                     "type": "dir",
-                    "path": "."
+                    "path": "../"
                 },
+
                 "cargo-sources.json"
             ]
         }
