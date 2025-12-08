@@ -47,7 +47,6 @@ pub fn main() -> iced::Result {
     } else {
         println!("CopyQ started successfully.");
     }
-    iced_fontello::build("fonts/ocr-icons.toml").expect("Build ocr-icons font");
     iced::application("MonteCapcho - Text Extractor", Editor::update, Editor::view)
             .centered()
         .window(window::Settings{position:Position::Centered,..Default::default()})

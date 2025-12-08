@@ -2,6 +2,7 @@
 name = "text-extractor"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [dependencies]
 iced ={version= "0.13.1",features =["highlighter", "tokio", "debug"]}
@@ -14,6 +15,8 @@ anyhow = "1.0"
 iced_fontello="0.13"
 clap = { version = "4", features = ["derive"] }
 imageproc = "0.23"  # or the latest version
+
+[build-dependencies]
 
 [profile.release]
 codegen-units = 1
