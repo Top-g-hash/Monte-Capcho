@@ -1,81 +1,137 @@
-# MonteCapcho - Text Extractor
+# 🧩 MonteCapcho — Text Extractor for Linux
 
-MonteCapcho - Text Extractor is a cross-platform text extraction tool that leverages Optical Character Recognition (OCR) to capture text from a selected region of your screen. The application features both a command-line interface (CLI) and a graphical user interface (GUI) built with the [Iced](https://github.com/iced-rs/iced) framework.
+MonteCapcho is a lightweight Linux tool that lets you capture any region of your screen and extract text using offline OCR.
 
-## Features
+Built with:
+* 🦀 Rust — native performance
+* ❄️ Iced GUI — clean and minimal
+* 🔍 Tesseract OCR — offline text recognition
+* 🖼️ grim + slurp (Wayland)
+* 📸 maim + slop (X11)
+* 📋 CopyQ for clipboard persistence
 
-- **OCR Capture:** Quickly extract text from any part of your screen.
-- **Clipboard Integration:** Optionally copy extracted text to the clipboard. On Linux, the clipboard content is made persistent by spawning a daemon.
-- **Dual-mode Operation:**
-  - **CLI Mode:** Use flags to capture text and copy it without launching a full GUI.
-  - **GUI Mode:** Launch an interactive editor with syntax highlighting for viewing and editing extracted text.
-- **Cross-Platform:** Works on Windows, macOS, and Linux.
-- **Customizable:** Configure window behavior (centered, fixed size, floating on top) and more via Iced's builder API.
-- **Flatpak Packaging:** Easily package and distribute your app as a Flatpak.
+## ✨ Features
 
-## Prerequisites
+* Capture a region of your screen
+* Extract text instantly using OCR
+* One-click copy to clipboard
+* Works on Wayland and X11
+* Fully offline (no internet needed)
+* Simple, centered GUI for viewing/editing text
+* CLI mode for quick terminal usage
 
-- [Rust](https://www.rust-lang.org/tools/install) (recommended edition 2021 or later)
-- [Cargo](https://doc.rust-lang.org/cargo/) (Rust’s package manager)
+**Upcoming enhancements:**
+* High Accuracy Mode (PaddleOCR)
+* Code-aware OCR
+* Image preprocessing pipeline
+* Better dark-theme OCR support
 
-## Installation
+## 🛠 Dependencies
 
-1. **Clone the Repository:**
-
-   ```sh
-   git clone https://github.com/yourusername/montecapcho-text-extractor.git
-   cd montecapcho-text-extractor
-2. **Build the Application:**
-    For a release build, run:
-  ```sh
-     cargo build --release
-     ```
-##  Usage
-### Command-Line Mode
-Use CLI flags to perform OCR capture and (optionally) copy text to the clipboard:
- ```sh
-cargo run -- -c -p
+**Wayland:**
 ```
-   -  -c / --capture: Triggers OCR capture.
-   -  -p / --copy: Copies the extracted text to the clipboard. (On Linux, a background daemon is spawned to keep the clipboard content alive.)
-
-## Graphical User Interface (GUI) Mode
-
-Launch the GUI without any flags:
-```sh
-cargo run
+grim
+slurp
+tesseract
+leptonica
+copyq
 ```
-The GUI opens as a centered, rectangular window (with floating behavior on Windows) featuring a text editor for viewing and editing captured text. On-screen controls allow you to trigger OCR capture and manage clipboard copying.
-## Configuration
-### Window Settings
 
-The application uses Iced's window settings to control the appearance and behavior of the GUI:
+**X11:**
+```
+maim
+slop
+tesseract
+leptonica
+copyq
+```
 
- -  **Centered:** The window opens in the center of the screen.
-  - **Size:** A fixed rectangular window (e.g., 800x600 pixels).
-   -  **Floating:** On Windows, the window is set to always stay on top.
+## 📦 Installation
 
-These settings are applied using Iced's builder API in the main.rs file.
-### Clipboard Persistence on Linux
+### Arch Linux (PKGBUILD)
 
-On Linux, clipboard persistence is achieved by spawning a daemon process that holds the clipboard contents even after the main process exits. See the implementation in cli.rs for details.
-### Fonts and Icons
+Clone your PKGBUILD directory and run:
+```bash
+makepkg -si
+```
 
-    Icons: The app uses iced_fontello for icon fonts. The configuration is defined in the fonts/ocr-icons.toml file.
-    Default Font: A monospaced font is used for the text editor.
+Then launch:
+```bash
+text-extractor
+```
 
-## Flatpak Packaging
+(Once you upload to AUR, installation becomes as easy as: `yay -S text-extractor`)
 
-For packaging your application as a Flatpak, refer to the Flatpak Documentation and customize your Flatpak manifest accordingly. This allows you to distribute your application on a wide range of Linux distributions.
-## Contributing
+### Build From Source (Any Linux)
 
-Contributions are welcome! If you have bug reports, feature requests, or code improvements, please open an issue or submit a pull request on GitHub.
-## License
+```bash
+git clone https://github.com/Top-g-hash/Monte-Capcho
+cd Monte-Capcho
+cargo build --release
+./target/release/text-extractor
+```
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-## Acknowledgments
+## 🚀 Usage
 
-    Iced – The GUI framework powering the application.
+### CLI Mode
+
+Capture and extract:
+```bash
+text-extractor --capture
+```
+
+Capture + copy to clipboard:
+```bash
+text-extractor --capture --copy
+```
+
+**Flags:**
+* `-c` / `--capture` — perform screenshot + OCR
+* `-p` / `--copy` — copy output text to clipboard
+
+### GUI Mode
+
+Simply run:
+```bash
+text-extractor
+```
+
+You'll see:
+* Editable text area
+* Capture button
+* Copy button
+* Iced-based UI
+
+## 📁 Project Structure
+
+```
+src/                → App source code
+fonts/              → Embedded font assets
+assets/             → Icons & desktop file
+Cargo.toml          → Rust project config
+build.rs            → Font embedding / build scripts
+```
+
+## 📜 License
+
+This project is dual-licensed under:
+* MIT License
+* Apache 2.0 License
+
+See the `LICENSE` files for details.
+
+## 👏 Acknowledgments
+
+MonteCapcho is supported by:
+* Iced — GUI framework
+* Tesseract OCR
+* CopyQ — clipboard persistence
+* clap — CLI parsing
+* Rust community crates
+
+## 💬 Contributing
+
+Issues, suggestions, and pull requests are welcome! Visit: https://github.com/Top-g-hash/Monte-Capchopowering the application.
     Clap – For command-line argument parsing.
     arboard – For clipboard integration.
     iced_fontello – For icon font support.
