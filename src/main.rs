@@ -5,7 +5,6 @@ use iced::widget::{
 };
 use iced::{Center, Element, Fill, Font, Task, Theme};
 use std::ffi;
-use std::io;
 use std::path::{Path, PathBuf};
 use iced::Subscription;
 use iced::keyboard;
@@ -32,8 +31,6 @@ pub fn main() -> iced::Result {
                 println!("Extracted text:\n{}", text);
                 initial_text = Some(text.clone());
                if cli.copy {
-                    // Instead of calling copy_text_to_clipboard here,
-                    // we let the GUI trigger Message::CopyToClipboard.
                     trigger_copy = true;
                 }
             }
@@ -76,7 +73,6 @@ enum Message {
 }
 
 impl Editor {
-    // New initializer that accepts an optional captured text.
     fn new_with_text(initial_text: Option<String>, trigger_copy: bool) -> (Self, Task<Message>) {
         let content = if let Some(text) = initial_text {
             text_editor::Content::with_text(&text)
@@ -84,7 +80,6 @@ impl Editor {
             text_editor::Content::new()
         };
         let task = if trigger_copy {
-            // The async block here doesn't need to do any work; it's just used to schedule the message.
             Task::perform(async { () }, |_| Message::CopyToClipboard)
         } else {
             Task::none()
@@ -132,7 +127,7 @@ impl Editor {
                         self.status_message = "Failed to process".to_string();
                     }
                 }
-                Task::none() // Return an empty task
+                Task::none()
             }
 
             Message::ActionPerformed(action) => {
@@ -221,8 +216,6 @@ impl Editor {
     }
  fn subscription(&self) -> Subscription<Message> {
     keyboard::on_key_press(|key, modifiers| {
-        println!("Key: {:?}, Modifiers: {:?}", key, modifiers); // Debug output
-
         if modifiers.control() {
             match key {
                 keyboard::Key::Character(ch) => {
@@ -241,11 +234,7 @@ impl Editor {
     })
 }}
 
-#[derive(Debug, Clone)]
-pub enum OtherError {
-    DialogClosed,
-    IoError(io::ErrorKind),
-}
+
 
 
 
@@ -274,7 +263,6 @@ fn action<'a, Message: Clone + 'a>(
 
 
 fn copy_text_using_copyq(text: &str) -> Result<(), Box<dyn Error>> {
-    // Call the copyq command to store the text persistently.
     Command::new("copyq")
         .args(&["copy", text])
         .spawn()?
@@ -282,16 +270,11 @@ fn copy_text_using_copyq(text: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// Example usage:
 fn copy_editor_content(content: &text_editor::Content) -> Result<(), Box<dyn Error>> {
     let text = content.text();
 
-    // Option 1: Rely solely on CopyQ:
     copy_text_using_copyq(&text)?;
 
-    // Option 2: Use both the native API and CopyQ:
-    // Clipboard::new()?.set_text(text.to_string())?;
-    // copy_text_using_copyq(text)?;
 
     Ok(())
 }
