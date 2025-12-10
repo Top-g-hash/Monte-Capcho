@@ -98,9 +98,13 @@ text-extractor
 
 You'll see:
 * Editable text area
-* Capture button
-* Copy button
+* Capture button (`Ctrl+S`)
+* Copy button (`Ctrl+C`)
 * Iced-based UI
+
+**Keyboard Shortcuts:**
+* `Ctrl+S` — Capture screen region and extract text
+* `Ctrl+C` — Copy extracted text to clipboard
 
 ## 📁 Project Structure
 
@@ -131,9 +135,4 @@ MonteCapcho is supported by:
 
 ## 💬 Contributing
 
-Issues, suggestions, and pull requests are welcome! Visit: https://github.com/Top-g-hash/Monte-Capchopowering the application.
-    Clap – For command-line argument parsing.
-    arboard – For clipboard integration.
-    iced_fontello – For icon font support.
-
-
+Issues, suggestions, and pull requests are welcome! Visit: https://github.com/Top-g-hash/Monte-Capcho
