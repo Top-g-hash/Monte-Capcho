@@ -1,5 +1,10 @@
 # 🧩 MonteCapcho — Text Extractor for Linux
 
+<p align="center">
+  <img src="assets/screenshot1.png" width="400">
+  <img src="assets/screenshot2.png" width="400">
+</p>
+
 MonteCapcho is a lightweight Linux tool that lets you capture any region of your screen and extract text using offline OCR.
 
 Built with:

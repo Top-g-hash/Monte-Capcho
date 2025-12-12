@@ -18,7 +18,6 @@ iced_fontello="0.13"
 clap = { version = "4", features = ["derive"] }
 imageproc = "0.23"  # or the latest version
 
-[build-dependencies]
 
 [profile.release]
 codegen-units = 1
