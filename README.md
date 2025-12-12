@@ -2,8 +2,8 @@
 
 <table>
   <tr>
-    <td><img src="assets/screenshot-1.png" width="400"></td>
-    <td><img src="assets/screenshot-2.png" width="400"></td>
+    <td><img src="assets/screenshots/screenshot-1.png" width="400"></td>
+    <td><img src="assets/screenshots/screenshot-2.png" width="400"></td>
   </tr>
 </table>
 
