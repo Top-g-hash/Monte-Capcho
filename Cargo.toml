@@ -16,14 +16,13 @@ tesseract = "0.15"
 anyhow = "1.0"
 iced_fontello="0.13"
 clap = { version = "4", features = ["derive"] }
-imageproc = "0.23"  # or the latest version
-
+imageproc = "0.23"
 
 [profile.release]
 codegen-units = 1
 incremental = false
 lto = true
-opt-level = "z"  # Optimize for size
-strip = true     # Strip symbols
+opt-level = "z"
+strip = true
 
 
