@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=MonteCapcho Text Extractor
+GenericName=OCR Text Extractor
+Comment=Capture a region of your screen and extract text using OCR
+Exec=text-extractor
+Icon=text-extractor
+Terminal=false
+Categories=Utility;Graphics;
+Keywords=OCR;Text;Screenshot;Capture;

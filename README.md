@@ -125,9 +125,8 @@ build.rs            → Font embedding / build scripts
 
 ## 📜 License
 
-This project is dual-licensed under:
+This project is licensed under:
 * MIT License
-* Apache 2.0 License
 
 See the `LICENSE` files for details.
 
