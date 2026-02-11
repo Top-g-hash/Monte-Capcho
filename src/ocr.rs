@@ -92,8 +92,11 @@ pub fn capture_and_process() -> Result<String> {
     // Load image
     let img = image::open(&screenshot_path)?;
 
-    // Convert to grayscale
-    let mut gray = img.grayscale().to_luma8();
+    // ---- Increase saturation & brightness first ----
+    let enhanced = img.adjust_contrast(40.0).brighten(15);
+
+    // ---- Convert to grayscale AFTER enhancement ----
+    let mut gray = enhanced.grayscale().to_luma8();
 
     // ---- Detect dark theme ----
     let avg_brightness: u64 = gray.pixels().map(|p| p[0] as u64).sum::<u64>()
@@ -103,7 +106,7 @@ pub fn capture_and_process() -> Result<String> {
         image::imageops::invert(&mut gray);
     }
 
-    // ---- Resize (very important for small fonts) ----
+    // ---- Resize for OCR clarity ----
     let resized = image::imageops::resize(
         &gray,
         gray.width() * 2,
@@ -111,16 +114,8 @@ pub fn capture_and_process() -> Result<String> {
         image::imageops::FilterType::Lanczos3,
     );
 
-    // ---- Apply slight blur (helps threshold stability) ----
-    let blurred = gaussian_blur_f32(&resized, 1.0);
-
-    // ---- Increase contrast ----
-    let contrasted = DynamicImage::ImageLuma8(blurred)
-        .adjust_contrast(45.0)
-        .to_luma8();
-
-    // ---- Hard threshold (2 args only!) ----
-    let binary = threshold(&contrasted, 160);
+    // ---- Apply adaptive threshold (better for colored code) ----
+    let binary = imageproc::contrast::adaptive_threshold(&resized, 15);
 
     // Save processed image
     let processed_img = DynamicImage::ImageLuma8(binary);
