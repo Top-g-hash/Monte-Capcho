@@ -1,9 +1,11 @@
+use anyhow::{Context, Result};
+use image::{DynamicImage, GenericImageView};
+use imageproc::contrast::adaptive_threshold;
+use imageproc::contrast::threshold;
+use imageproc::filter::gaussian_blur_f32;
 use std::process::Command;
 use tempfile::NamedTempFile;
 use tesseract::Tesseract;
-use anyhow::{Result, Context};
-use image::DynamicImage ;
-use imageproc::contrast::adaptive_threshold;
 
 fn detect_display_server() -> &'static str {
     // Check XDG_SESSION_TYPE first (most reliable indicator)
@@ -87,18 +89,38 @@ pub fn capture_and_process() -> Result<String> {
         }
     }
 
-    // Process image (same for both X11 and Wayland)
+    // Load image
     let img = image::open(&screenshot_path)?;
-    // Convert image to grayscale
-    let gray = img.grayscale();
-    // Increase contrast
-    let contrasted = gray.adjust_contrast(2.0);
 
-    // Convert to an 8-bit grayscale image
-    let luma = contrasted.to_luma8();
-    // Apply adaptive thresholding.
-    // The parameters (block size and constant) may need tuning depending on your images.
-let binary = adaptive_threshold(&luma, 15);
+    // Convert to grayscale
+    let mut gray = img.grayscale().to_luma8();
+
+    // ---- Detect dark theme ----
+    let avg_brightness: u64 = gray.pixels().map(|p| p[0] as u64).sum::<u64>()
+        / (gray.width() as u64 * gray.height() as u64);
+
+    if avg_brightness < 110 {
+        image::imageops::invert(&mut gray);
+    }
+
+    // ---- Resize (very important for small fonts) ----
+    let resized = image::imageops::resize(
+        &gray,
+        gray.width() * 2,
+        gray.height() * 2,
+        image::imageops::FilterType::Lanczos3,
+    );
+
+    // ---- Apply slight blur (helps threshold stability) ----
+    let blurred = gaussian_blur_f32(&resized, 1.0);
+
+    // ---- Increase contrast ----
+    let contrasted = DynamicImage::ImageLuma8(blurred)
+        .adjust_contrast(45.0)
+        .to_luma8();
+
+    // ---- Hard threshold (2 args only!) ----
+    let binary = threshold(&contrasted, 160);
 
     // Save processed image
     let processed_img = DynamicImage::ImageLuma8(binary);
@@ -107,8 +129,19 @@ let binary = adaptive_threshold(&luma, 15);
     processed_img.save(&processed_path)?;
 
     // Perform OCR
-    let image_path_str = processed_path.to_str().ok_or_else(|| anyhow::anyhow!("Invalid path"))?;
-    let mut tess = Tesseract::new(None, Some("eng"))?;
+    let image_path_str = processed_path
+        .to_str()
+        .ok_or_else(|| anyhow::anyhow!("Invalid path"))?;
+    let mut tess = Tesseract::new(None, Some("eng"))?
+    .set_variable("preserve_interword_spaces", "1")?
+    .set_variable("tessedit_pageseg_mode", "6")?
+    .set_variable(
+        "tessedit_char_whitelist",
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789{}[]()<>;:.,_+-=*/!&|\"'\\# ",
+    )?
+        .set_variable("textord_heavy_nr", "1")?
+      .set_variable("textord_min_linesize", "2.5")?;
+
     tess = tess.set_image(image_path_str)?;
     let text = tess.get_text()?;
 
