@@ -83,15 +83,14 @@ cargo build --release
 ## 🚀 Usage
 
 ### CLI Mode
-
 Capture and extract:
 ```bash
-text-extractor --capture
+MonteCapcho --capture
 ```
 
 Capture + copy to clipboard:
 ```bash
-text-extractor --capture --copy
+MonteCapcho --capture --copy
 ```
 
 **Flags:**
@@ -99,10 +98,9 @@ text-extractor --capture --copy
 * `-p` / `--copy` — copy output text to clipboard
 
 ### GUI Mode
-
 Simply run:
 ```bash
-text-extractor
+MonteCapcho
 ```
 
 You'll see:
