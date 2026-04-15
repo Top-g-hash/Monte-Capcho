@@ -1,4 +1,4 @@
-# MonteCapcho
+# 🧩 MonteCapcho
 
 > Select any region on your screen and instantly extract text like code snippets or simple CAPTCHA — fully offline.
 
@@ -8,7 +8,7 @@ Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and 
 
 ---
 
-## Features
+## ✨ Features
 
 - **Draw & extract** — select a region and get text in one step
 - **Fully offline** — nothing leaves your machine
@@ -25,7 +25,7 @@ Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and 
 
 ---
 
-## Installation
+## 📦 Installation
 
 ### Arch Linux — AUR (recommended)
 
@@ -54,7 +54,7 @@ cargo build --release
 
 ---
 
-## Dependencies
+## 🛠Dependencies
 
 AUR installations handle these automatically. If building from source, install them manually.
 
@@ -92,7 +92,7 @@ sudo apt install copyq
 
 ---
 
-## Usage
+## 🚀 Usage
 
 ### GUI mode
 
@@ -130,7 +130,7 @@ MonteCapcho --capture --copy
 
 ---
 
-## Project structure
+## 📁 Project structure
 
 ```
 src/         Application source code
@@ -142,13 +142,13 @@ build.rs     Build script for font embedding
 
 ---
 
-## License
+## 📜 License
 
 Licensed under the [MIT License](LICENSE).
 
 ---
 
-## Acknowledgments
+## 👏 Acknowledgments
 
 - [Iced](https://github.com/iced-rs/iced) — GUI framework
 - [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) — text recognition engine
@@ -157,7 +157,7 @@ Licensed under the [MIT License](LICENSE).
 
 ---
 
-## Contributing
+## 💬 Contributing
 
 Contributions are welcome — bugs, features, and improvements alike.
 
