@@ -1,6 +1,8 @@
 # MonteCapcho
 
-> Screen OCR for Linux — draw a region, extract text instantly. No internet required.
+> Select any region on your screen and instantly extract text like code snippets or simple CAPTCHA — fully offline.
+
+MonteCapcho was built to reduce the pain of copying code from tutorials and quickly capture text from anywhere on your screen.
 
 Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and X11.
 
