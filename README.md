@@ -54,7 +54,7 @@ cargo build --release
 
 ---
 
-## 🛠Dependencies
+## 🛠 Dependencies
 
 AUR installations handle these automatically. If building from source, install them manually.
 
