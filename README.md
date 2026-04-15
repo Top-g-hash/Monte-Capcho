@@ -28,7 +28,7 @@ Built with:
 * CLI mode for quick terminal usage
 
 **Upcoming enhancements:**
-* High Accuracy Mode (PaddleOCR)
+* High Accuracy Mode
 * Code-aware OCR
 * Image preprocessing pipeline
 * Better dark-theme OCR support
