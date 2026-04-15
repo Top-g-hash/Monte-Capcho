@@ -71,6 +71,16 @@ These are installed automatically via the AUR package. If building from source, 
 | `leptonica` | Image processing library |
 | `copyq` | Clipboard persistence |
 
+> **Note:** `copyq` is not installed by default on most distros. Install it via your package manager:
+> ```bash
+> # Arch
+> sudo pacman -S copyq
+>
+> # Debian/Ubuntu
+> sudo apt install copyq
+> ```
+> Without it, the copy-to-clipboard feature will not work.
+
 **Wayland only:**
 
 | Package | Purpose |
