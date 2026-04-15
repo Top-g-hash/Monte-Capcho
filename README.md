@@ -1,4 +1,4 @@
-# 🧩 MonteCapcho — Text Extractor for Linux
+# 🧩 MonteCapcho — Screen OCR for Linux
 
 <table>
   <tr>
@@ -7,138 +7,158 @@
   </tr>
 </table>
 
-MonteCapcho is a lightweight Linux tool that lets you capture any region of your screen and extract text using offline OCR.
+MonteCapcho lets you draw a region on your screen and instantly extract the text from it — no internet required. Works on both Wayland and X11.
 
-Built with:
-* 🦀 Rust — native performance
-* ❄️ Iced GUI — clean and minimal
-* 🔍 Tesseract OCR — offline text recognition
-* 🖼️ grim + slurp (Wayland)
-* 📸 maim + slop (X11)
-* 📋 CopyQ for clipboard persistence
+Built with **Rust**, **Iced**, and **Tesseract OCR**.
+
+---
 
 ## ✨ Features
 
-* Capture a region of your screen
-* Extract text instantly using OCR
-* One-click copy to clipboard
-* Works on Wayland and X11
-* Fully offline (no internet needed)
-* Simple, centered GUI for viewing/editing text
-* CLI mode for quick terminal usage
+- Draw a region → extract text in one step
+- Fully offline — nothing leaves your machine
+- Works on Wayland (`grim` + `slurp`) and X11 (`maim` + `slop`)
+- Simple GUI with an editable text area
+- CLI mode for scripting and terminal workflows
+- One-click clipboard copy
 
-**Upcoming enhancements:**
-* High Accuracy Mode
-* Code-aware OCR
-* Image preprocessing pipeline
-* Better dark-theme OCR support
+**Coming soon:**
+- High-accuracy mode via PaddleOCR
+- Code-aware OCR
+- Image preprocessing pipeline
+- Improved dark background OCR
 
-## 🛠 Dependencies
-
-**Wayland:**
-```
-grim
-slurp
-tesseract
-leptonica
-copyq
-```
-
-**X11:**
-```
-maim
-slop
-tesseract
-leptonica
-copyq
-```
+---
 
 ## 📦 Installation
 
-### Arch Linux (AUR)
+### Arch Linux — AUR (recommended)
+
 ```bash
 yay -S montecapcho
 ```
 
-### Arch Linux (PKGBUILD)
+Or manually with the PKGBUILD:
+
 ```bash
 git clone https://aur.archlinux.org/montecapcho.git
 cd montecapcho
 makepkg -si
 ```
 
-Then launch:
-```bash
-MonteCapcho
-```
+### Build from source
 
-### Build From Source (Any Linux)
+Requires Rust toolchain (1.82+), Tesseract, and Leptonica installed.
+
 ```bash
 git clone https://github.com/Top-g-hash/Monte-Capcho
 cd Monte-Capcho
 cargo build --release
-./target/release/text-extractor
+./target/release/MonteCapcho
 ```
+
+---
+
+## 🛠 Dependencies
+
+These are installed automatically via the AUR package. If building from source, install them manually:
+
+**Common (both Wayland and X11):**
+
+| Package | Purpose |
+|---|---|
+| `tesseract` | OCR engine |
+| `leptonica` | Image processing library |
+| `copyq` | Clipboard persistence |
+
+**Wayland only:**
+
+| Package | Purpose |
+|---|---|
+| `grim` | Screenshot tool |
+| `slurp` | Region selection |
+
+**X11 only:**
+
+| Package | Purpose |
+|---|---|
+| `maim` | Screenshot tool |
+| `slop` | Region selection |
+
+---
 
 ## 🚀 Usage
 
-### CLI Mode
-Capture and extract:
+### GUI mode
+
+```bash
+MonteCapcho
+```
+
+The GUI gives you an editable text area, a capture button, and a copy button.
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+S` | Capture region and extract text |
+| `Ctrl+C` | Copy extracted text to clipboard |
+
+### CLI mode
+
+Capture and print text to stdout:
+
 ```bash
 MonteCapcho --capture
 ```
 
-Capture + copy to clipboard:
+Capture and copy directly to clipboard:
+
 ```bash
 MonteCapcho --capture --copy
 ```
 
 **Flags:**
-* `-c` / `--capture` — perform screenshot + OCR
-* `-p` / `--copy` — copy output text to clipboard
 
-### GUI Mode
-Simply run:
-```bash
-MonteCapcho
-```
+| Flag | Description |
+|---|---|
+| `-c` / `--capture` | Perform screenshot + OCR |
+| `-p` / `--copy` | Copy output text to clipboard |
 
-You'll see:
-* Editable text area
-* Capture button (`Ctrl+S`)
-* Copy button (`Ctrl+C`)
-* Iced-based UI
-
-**Keyboard Shortcuts:**
-* `Ctrl+S` — Capture screen region and extract text
-* `Ctrl+C` — Copy extracted text to clipboard
+---
 
 ## 📁 Project Structure
 
 ```
-src/                → App source code
-fonts/              → Embedded font assets
-assets/             → Icons & desktop file
-Cargo.toml          → Rust project config
-build.rs            → Font embedding / build scripts
+src/         → Application source code
+fonts/       → Embedded font assets
+assets/      → Icons and .desktop file
+Cargo.toml   → Rust project config
+build.rs     → Build scripts (font embedding)
 ```
+
+---
 
 ## 📜 License
 
-This project is licensed under:
-* MIT License
+Licensed under the [MIT License](LICENSE).
 
-See the `LICENSE` files for details.
+---
 
 ## 👏 Acknowledgments
 
-MonteCapcho is supported by:
-* Iced — GUI framework
-* Tesseract OCR
-* CopyQ — clipboard persistence
-* clap — CLI parsing
-* Rust community crates
+- [Iced](https://github.com/iced-rs/iced) — GUI framework
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) — text recognition
+- [CopyQ](https://hluk.github.io/CopyQ/) — clipboard manager
+- [clap](https://github.com/clap-rs/clap) — CLI argument parsing
+
+---
 
 ## 💬 Contributing
 
-Issues, suggestions, and pull requests are welcome! Visit: https://github.com/Top-g-hash/Monte-Capcho
+Contributions are welcome — bugs, features, or improvements.
+
+1. Fork the repo
+2. Create a branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Open a pull request
+
+Report issues at: [github.com/Top-g-hash/Monte-Capcho/issues](https://github.com/Top-g-hash/Monte-Capcho/issues)
