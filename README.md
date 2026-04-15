@@ -1,46 +1,39 @@
-# 🧩 MonteCapcho — Screen OCR for Linux
+# MonteCapcho
 
-<table>
-  <tr>
-    <td><img src="assets/screenshots/screenshot-1.png" width="400"></td>
-    <td><img src="assets/screenshots/screenshot-2.png" width="400"></td>
-  </tr>
-</table>
+> Screen OCR for Linux — draw a region, extract text instantly. No internet required.
 
-MonteCapcho lets you draw a region on your screen and instantly extract the text from it — no internet required. Works on both Wayland and X11.
-
-Built with **Rust**, **Iced**, and **Tesseract OCR**.
+Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and X11.
 
 ---
 
-## ✨ Features
+## Features
 
-- Draw a region → extract text in one step
-- Fully offline — nothing leaves your machine
-- Works on Wayland (`grim` + `slurp`) and X11 (`maim` + `slop`)
-- Simple GUI with an editable text area
-- CLI mode for scripting and terminal workflows
-- One-click clipboard copy
+- **Draw & extract** — select a region and get text in one step
+- **Fully offline** — nothing leaves your machine
+- **Wayland & X11 support** — uses `grim + slurp` or `maim + slop` depending on your session
+- **Simple GUI** — editable text area, capture button, one-click clipboard copy
+- **CLI mode** — pipe-friendly, scriptable terminal interface
 
-**Coming soon:**
-- High-accuracy mode via PaddleOCR
+### Coming soon
+
+- High-accuracy mode
 - Code-aware OCR
 - Image preprocessing pipeline
-- Improved dark background OCR
+- Improved dark-background OCR
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Arch Linux — AUR (recommended)
 
-```bash
+```sh
 yay -S montecapcho
 ```
 
-Or manually with the PKGBUILD:
+Or build manually from the PKGBUILD:
 
-```bash
+```sh
 git clone https://aur.archlinux.org/montecapcho.git
 cd montecapcho
 makepkg -si
@@ -48,9 +41,9 @@ makepkg -si
 
 ### Build from source
 
-Requires Rust toolchain (1.82+), Tesseract, and Leptonica installed.
+**Requirements:** Rust 1.82+, Tesseract, Leptonica
 
-```bash
+```sh
 git clone https://github.com/Top-g-hash/Monte-Capcho
 cd Monte-Capcho
 cargo build --release
@@ -59,11 +52,11 @@ cargo build --release
 
 ---
 
-## 🛠 Dependencies
+## Dependencies
 
-These are installed automatically via the AUR package. If building from source, install them manually:
+AUR installations handle these automatically. If building from source, install them manually.
 
-**Common (both Wayland and X11):**
+### Common
 
 | Package | Purpose |
 |---|---|
@@ -71,24 +64,24 @@ These are installed automatically via the AUR package. If building from source, 
 | `leptonica` | Image processing library |
 | `copyq` | Clipboard persistence |
 
-> **Note:** `copyq` is not installed by default on most distros. Install it via your package manager:
-> ```bash
-> # Arch
-> sudo pacman -S copyq
->
-> # Debian/Ubuntu
-> sudo apt install copyq
-> ```
-> Without it, the copy-to-clipboard feature will not work.
+> **Note:** `copyq` is not installed by default on most distros. Without it, copy-to-clipboard will not work.
 
-**Wayland only:**
+```sh
+# Arch
+sudo pacman -S copyq
+
+# Debian / Ubuntu
+sudo apt install copyq
+```
+
+### Wayland only
 
 | Package | Purpose |
 |---|---|
 | `grim` | Screenshot tool |
 | `slurp` | Region selection |
 
-**X11 only:**
+### X11 only
 
 | Package | Purpose |
 |---|---|
@@ -97,15 +90,15 @@ These are installed automatically via the AUR package. If building from source, 
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### GUI mode
 
-```bash
+```sh
 MonteCapcho
 ```
 
-The GUI gives you an editable text area, a capture button, and a copy button.
+The GUI includes an editable text area, a capture button, and a copy button.
 
 | Shortcut | Action |
 |---|---|
@@ -116,59 +109,59 @@ The GUI gives you an editable text area, a capture button, and a copy button.
 
 Capture and print text to stdout:
 
-```bash
+```sh
 MonteCapcho --capture
 ```
 
-Capture and copy directly to clipboard:
+Capture and copy directly to the clipboard:
 
-```bash
+```sh
 MonteCapcho --capture --copy
 ```
 
-**Flags:**
+### Flags
 
 | Flag | Description |
 |---|---|
-| `-c` / `--capture` | Perform screenshot + OCR |
-| `-p` / `--copy` | Copy output text to clipboard |
+| `-c`, `--capture` | Perform screenshot and OCR |
+| `-p`, `--copy` | Copy output text to the clipboard |
 
 ---
 
-## 📁 Project Structure
+## Project structure
 
 ```
-src/         → Application source code
-fonts/       → Embedded font assets
-assets/      → Icons and .desktop file
-Cargo.toml   → Rust project config
-build.rs     → Build scripts (font embedding)
+src/         Application source code
+fonts/       Embedded font assets
+assets/      Icons and .desktop file
+Cargo.toml   Rust project config
+build.rs     Build script for font embedding
 ```
 
 ---
 
-## 📜 License
+## License
 
 Licensed under the [MIT License](LICENSE).
 
 ---
 
-## 👏 Acknowledgments
+## Acknowledgments
 
 - [Iced](https://github.com/iced-rs/iced) — GUI framework
-- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) — text recognition
-- [CopyQ](https://hluk.github.io/CopyQ/) — clipboard manager
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) — text recognition engine
+- [CopyQ](https://hluk.github.io/CopyQ/) — clipboard management
 - [clap](https://github.com/clap-rs/clap) — CLI argument parsing
 
 ---
 
-## 💬 Contributing
+## Contributing
 
-Contributions are welcome — bugs, features, or improvements.
+Contributions are welcome — bugs, features, and improvements alike.
 
 1. Fork the repo
-2. Create a branch (`git checkout -b feature/my-feature`)
+2. Create a branch: `git checkout -b feature/my-feature`
 3. Commit your changes
 4. Open a pull request
 
-Report issues at: [github.com/Top-g-hash/Monte-Capcho/issues](https://github.com/Top-g-hash/Monte-Capcho/issues)
+Report issues at [github.com/Top-g-hash/Monte-Capcho/issues](https://github.com/Top-g-hash/Monte-Capcho/issues)
