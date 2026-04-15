@@ -55,22 +55,24 @@ copyq
 
 ## 📦 Installation
 
-### Arch Linux (PKGBUILD)
-
-Clone your PKGBUILD directory and run:
+### Arch Linux (AUR)
 ```bash
+yay -S montecapcho
+```
+
+### Arch Linux (PKGBUILD)
+```bash
+git clone https://aur.archlinux.org/montecapcho.git
+cd montecapcho
 makepkg -si
 ```
 
 Then launch:
 ```bash
-text-extractor
+MonteCapcho
 ```
 
-(Once you upload to AUR, installation becomes as easy as: `yay -S text-extractor`)
-
 ### Build From Source (Any Linux)
-
 ```bash
 git clone https://github.com/Top-g-hash/Monte-Capcho
 cd Monte-Capcho
