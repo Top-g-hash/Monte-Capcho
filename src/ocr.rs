@@ -134,8 +134,12 @@ pub fn capture_and_process() -> Result<String> {
         "tessedit_char_whitelist",
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789{}[]()<>;:.,_+-=*/!&|\"'\\# ",
     )?
-        .set_variable("textord_heavy_nr", "1")?
-      .set_variable("textord_min_linesize", "2.5")?;
+    .set_variable("tessedit_char_blacklist", "`~")?
+    .set_variable("load_system_dawg", "0")?
+    .set_variable("load_freq_dawg", "0")?
+    .set_variable("classify_bln_numeric_mode", "1")?
+    .set_variable("textord_heavy_nr", "1")?
+    .set_variable("textord_min_linesize", "2.5")?;
 
     tess = tess.set_image(image_path_str)?;
     let text = tess.get_text()?;
