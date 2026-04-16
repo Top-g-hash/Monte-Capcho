@@ -1,9 +1,12 @@
-# 🧩 MonteCapcho
+<div align="center">
+  <img src="assets/icon.png" width="72" height="72" style="background:#fff;border-radius:16px;padding:8px;" alt="MonteCapcho icon" />
+  <h1>MonteCapcho</h1>
+  <p><em>Select any region on your screen and instantly extract text like code snippets or simple CAPTCHA — fully offline.</em></p>
+</div>
 
-> Select any region on your screen and instantly extract text like code snippets or simple CAPTCHA — fully offline.
+---
 
 MonteCapcho was built to reduce the pain of copying code from tutorials and quickly capture text from anywhere on your screen.
-
 Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and X11.
 
 ---
@@ -22,6 +25,16 @@ Built with **Rust**, **Iced**, and **Tesseract OCR**. Works on both Wayland and 
 - Code-aware OCR
 - Image preprocessing pipeline
 - Improved dark-background OCR
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="assets/screenshots/screenshot-1.png" width="48%" alt="Screenshot 1" />
+  &nbsp;
+  <img src="assets/screenshots/screenshot-2.png" width="48%" alt="Screenshot 2" />
+</div>
 
 ---
 
@@ -71,7 +84,6 @@ AUR installations handle these automatically. If building from source, install t
 ```sh
 # Arch
 sudo pacman -S copyq
-
 # Debian / Ubuntu
 sudo apt install copyq
 ```
