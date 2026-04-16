@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/icon.png" width="72" height="72" style="background:#fff;border-radius:16px;padding:8px;" alt="MonteCapcho icon" />
+  <img src="assets/icon.png" width="120" height="120" style="background:#fff;border-radius:20px;padding:10px;" alt="MonteCapcho icon" />
   <h1>MonteCapcho</h1>
   <p><em>Select any region on your screen and instantly extract text like code snippets or simple CAPTCHA — fully offline.</em></p>
 </div>
